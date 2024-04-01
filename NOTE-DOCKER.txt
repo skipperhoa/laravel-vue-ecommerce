@@ -1,0 +1,87 @@
+ChatGPT
+Để kết nối vào một máy chủ MySQL đang chạy trong một container Docker bằng Sequel Ace, bạn cần biết địa chỉ IP của container MySQL và cổng mà MySQL đang lắng nghe trên. Đây là các bước bạn có thể thực hiện:
+
+Lấy địa chỉ IP của container MySQL:
+
+Chạy lệnh sau trong terminal để lấy danh sách các container Docker đang chạy:
+Copy code
+docker ps
+Tìm container MySQL trong danh sách và ghi nhớ tên hoặc ID của nó.
+Sau đó, chạy lệnh sau để lấy địa chỉ IP của container MySQL:
+arduino
+Copy code
+docker inspect <container_name_or_id> | grep IPAddress
+Ghi nhớ địa chỉ IP này cho bước tiếp theo.
+Kết nối bằng Sequel Ace:
+
+Mở Sequel Ace trên máy tính của bạn.
+Nhấp vào nút "New Connection" để tạo kết nối mới.
+Điền các thông tin sau:
+Name: Tên cho kết nối của bạn (ví dụ: MySQL Docker).
+Host: Địa chỉ IP của container MySQL (bước 1).
+Port: Số cổng mà MySQL đang lắng nghe trên container (thường là 3306).
+User: Tên người dùng MySQL.
+Password: Mật khẩu của người dùng MySQL.
+Sau đó, nhấp vào nút "Test Connection" để kiểm tra xem kết nối có thành công không.
+Nếu kết nối thành công, bạn có thể nhấp vào nút "Connect" để kết nối vào cơ sở dữ liệu MySQL trong container Docker của bạn.
+Lưu ý rằng trong một số trường hợp, bạn có thể cần xác định các thiết lập bổ sung như database name hoặc các thiết lập khác tùy thuộc vào cấu hình của container MySQL của bạn.
+
+----------------------------------------------------------------
+hoacode@HOACODEs-MacBook-Pro laravel-10 % docker-compose ps
+          Name                     Command             State                              Ports
+-----------------------------------------------------------------------------------------------------------------------
+laravel-10-laravel.test-1   start-container         Up             0.0.0.0:5173->5173/tcp, 0.0.0.0:80->80/tcp, 8000/tcp
+laravel-10-mysql-1          /entrypoint.sh mysqld   Up (healthy)   0.0.0.0:3306->3306/tcp, 33060/tcp, 33061/tcp
+hoacode@HOACODEs-MacBook-Pro laravel-10 % docker inspect laravel-10-mysql-1 | grep -e IPAddress
+            "SecondaryIPAddresses": null,
+            "IPAddress": "",
+                    "IPAddress": "172.22.0.2",
+hoacode@HOACODEs-MacBook-Pro laravel-10 % docker exec -it laravel-10-mysql-1 mysql -u hoanguyencoder -p
+
+
+----------------------------------------------------------------
+CHÚ Ý :(docker exec -it container_mysql_name mysql -u username -p)
++ username : là user name connect, nó nằm trong file .env
+DB_CONNECTION=mysql
+DB_HOST=mysql
+DB_PORT=3306
+DB_DATABASE=laravel10_vue3_cart
+DB_USERNAME=hoanguyencoder
+DB_PASSWORD=12345678
++ container_mysql_name : là name của container mysql có trong khi ta run docker lên
+
+docker exec: Dùng để thực thi một lệnh trong một container Docker đang chạy.
+-it: Chạy lệnh trong chế độ tương tác (interactive mode) và sử dụng terminal (TTY).
+container_mysql_name: Tên của container Docker mà bạn muốn thực thi lệnh trong đó.
+mysql: Là lệnh để thực thi MySQL client.
+-u username: Sử dụng tài khoản người dùng MySQL với tên người dùng là "username".
+-p: Được sử dụng để yêu cầu nhập mật khẩu sau khi kết nối đến server MySQL.
+
+hoacode@HOACODEs-MacBook-Pro ~ % docker exec -it container_mysql_name mysql -u  -p
+hoacode@HOACODEs-MacBook-Pro ~ % docker exec -it laravel-10-mysql-1 mysql -u hoanguyencoder -p
+Enter password:
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 45
+Server version: 8.0.32 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2023, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show databases;
++---------------------+
+| Database            |
++---------------------+
+| information_schema  |
+| laravel10_vue3_cart |
+| performance_schema  |
+| testing             |
++---------------------+
+4 rows in set (0.02 sec)
+
+mysql>
+

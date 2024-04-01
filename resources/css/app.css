@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.group:focus .group-focus\:flex {
+    display: flex;
+}
+[x-cloak] { display: none; }
+.cart-item {
+    display:block;
+    animation: xAxis 1s forwards cubic-bezier(1.000,0.440,0.840,0.165);
+    }
+    .cart-item:before {
+      animation: yAxis 1s alternate forwards cubic-bezier(0.165, 0.840, 0.440, 1.000);
+    }
+
+    @keyframes xAxis {
+        100% {
+          transform: translateX(calc(50vw - 105px));
+        }
+      }
+
+      @keyframes yAxis {
+        100% {
+          transform: translateY(calc(-50vh + 75px));
+        }
+      }
+
+
+.shake-cart {
+        animation: shakeCart .4s ease-in-out forwards;
+      }
+@keyframes shakeCart {
+    25% {
+      transform:translateX(6px)
+    }
+    50% {
+      transform:translateX(-4px);
+    }
+    75% {
+      transform:translateX(2px);
+    }
+    100% {
+      transform:translateX(0);
+    }
+  }
