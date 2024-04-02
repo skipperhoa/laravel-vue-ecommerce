@@ -13,5 +13,8 @@ Bulding a shop E-Commerce in Vue 3 + Laravel 10 + JWT(Json Web Token)
 -  Register / Login : We use JWT (json web token)
 -  Use Vuex in Vue, setup manager cart in Store
 -  Use vuex-persistedstate , save state in localStotage and Cookie
+
+# DEMO
+![Register](https://raw.githubusercontent.com/skipperhoa/laravel-vue-ecommerce/master/hoacode_note/demo/Screenshot%202024-04-01%20at%2014.30.59.png)
   
 
