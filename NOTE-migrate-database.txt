@@ -1,0 +1,5 @@
+php artisan make:model Product -m -s -f
+php artisan migrate
+php artisan db:seed
+------------------------------------------------
+php artisan model:show Product

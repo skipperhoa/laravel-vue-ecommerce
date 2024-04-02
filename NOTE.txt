@@ -1,0 +1,370 @@
+Cài đặt laravel sail
+----------------------------------------------------------------
+Step 1:
+curl -s https://laravel.build/example-app | bash
+
+Step 2:
+cd example-app
+
+./vendor/bin/sail up
+
+Nếu gõ http://localhost chưa hoạt động vui lòng cài đặt sail trong laravel
+
+Step 3: instal sail trong laravel : https://laravel.com/docs/10.x/sail
+
+composer require laravel/sail --dev
+
+php artisan sail:install
+
+./vendor/bin/sail up
+----------------------------------------------------------------
+
+Nếu muốn add thêm các service
+php artisan sail:add
+
+----------------------------------------------------------------
++ Asset Bundling (Vite)
+Phải cài đặt nodejs trước
+Kiểm tra nodejs
+
+./vendor/bin/sail node -v
+./vendor/bin/sail npm -v
+
+Installing Vite and the Laravel Plugin
+
+----------------------------------------------------------------
+Vue
+
+npm install --save-dev @vitejs/plugin-vue
+
+
+react
+npm install --save-dev @vitejs/plugin-react
+
+
+
+----------------------------------------------------------------
+Chú ý lỗi
+/var/www/html/node_modules/rollup/dist/native.js:87
+		throw new Error(
+This is happening because you are mounting the local node_modules (containing the Windows binaries) on the container. You need to use the node_modules inside the Docker image or run npm i inside the container (so that the linux binaries are downloaded).
+
+For example, use a named volume and run npm i in the container. (docker compose run node npm i && docker compose up)
+
+version: '3'
+
+services:
+  node:
+    build:
+      context: .
+    ports:
+      - "3035:3000"
+    volumes:
+      - ./:/usr/src/app
+      - node_modules:/usr/src/app/node_modules
+
+volumes:
+  node_modules:
+
+
+  Chỉ cần xoá thư mục node_modules  và chạy lại lệnh
+  ./vendor/bin/sail npm i
+  sau đó chạy
+  npm run dev
+
+
+----------------------------------------------------------------
+You can do all this in the View::composer. You can even access the store and add variables to it then export with View::share('store', json_encode($store));
+
+Injecting items as global window properties
+https://laracasts.com/discuss/channels/vue/global-vue-prop-using-laravelinertiavue?page=1&replyId=876591
+https://stackoverflow.com/questions/58377317/passing-laravel-variables-to-vue-frontend
+https://laraveldaily.com/lesson/vue-laravel-spa/install-laravel-vue-component
+import Vue from "vue";
+import Vuex from "vuex";
+import axios from "axios";
+import VueAxios from "vue-axios";
+
+Vue.use(Vuex);
+Vue.use(VueAxios, axios);
+
+export default new Vuex.Store({
+  state: {
+    users: [],
+  },
+actions: {
+    loadUsers({commit}) {
+      Vue.axios.defaults.baseURL = "https://jsonplaceholder.typicode.com/";
+      Vue.axios.get('users').then(result => {
+        commit('SAVE_USERS', result.data);
+      }).catch(error => {
+        throw new Error(`API ${error}`);
+      });
+    },
+  mutations: {
+    SAVE_USERS(state, users) {
+      state.users = users;
+    }
+  }
+})
+----------------------------------------------------------------
+- src/
+  - assets/            // Tài nguyên như hình ảnh, biểu tượng, CSS
+  - components/        // Các thành phần Vue.js tái sử dụng
+  - views/             // Các trang của ứng dụng
+  - router/            // Cấu hình router
+  - store/             // Cấu hình và modules của Vuex store (nếu sử dụng Vuex)
+  - services/          // Các dịch vụ, API requests
+  - utils/             // Các utility functions và helper
+  - mixins/            // Các mixins Vue.js
+  - directives/        // Các directives Vue.js
+  - plugins/           // Các plugins Vue.js hoặc thư viện khác
+  - locales/           // File dịch và quản lý ngôn ngữ
+  - assets/            // Tài nguyên như hình ảnh, biểu tượng, CSS
+  - App.vue            // Component Vue chính của ứng dụng
+  - main.js            // File khởi tạo của ứng dụng Vue.js
+- public/              // Thư mục chứa các tệp tĩnh không được xử lý bởi Webpack
+
+----------------------------------------------------------------
+Setup Mutiple layou in vue
+https://blog.izem.dev/a-vue-3-users-guide-to-creating-complex-layouts
+https://laracasts.com/discuss/channels/inertia/more-than-one-layout
+import.meta.globEager #7066
+Unanswered
+
+https://github.com/vitejs/vite/discussions/7066
+
+on Feb 24, 2022
+import.meta.globEager，method types in imported files are missing when using typescript，How to solve it?
+
+const modulesFiles = import.meta.glob("../api/*.js",{ eager: true })
+----------------------------------------------------------------
+Khởi tạo (Initialization): Khi một thành phần Vue được tạo, nó sẽ thực hiện các bước khởi tạo như thiết lập dữ liệu, props, các sự kiện và các chức năng khác.
+
+Mounting (Lắp đặt): Sau khi khởi tạo, thành phần Vue sẽ được "mount" vào DOM, có nghĩa là nó sẽ được hiển thị và gắn vào trong cây DOM. Trong giai đoạn này, các sự kiện như beforeCreate, created, beforeMount, và mounted được kích hoạt.
+
+Updating (Cập nhật): Khi dữ liệu của thành phần Vue thay đổi, nó sẽ bắt đầu giai đoạn cập nhật. Trong giai đoạn này, Vue kiểm tra các sự kiện mới và cập nhật DOM tương ứng. Các sự kiện như beforeUpdate và updated được kích hoạt trong quá trình này.
+
+Unmounting (Hủy bỏ): Khi một thành phần Vue không còn cần thiết và sẽ bị xóa khỏi DOM, nó sẽ đi qua giai đoạn hủy bỏ. Trong giai đoạn này, các sự kiện như beforeDestroy và destroyed được kích hoạt.
+----------------------------------------------------------------
+Install Json Web Token in Laravel 10  : https://jwt-auth.readthedocs.io/en/develop/laravel-installation/
+1. composer require tymon/jwt-auth
+  //if you sail in docker , you can run it the bellow code
+  ./vender/bin/sain composer require tymon/jwt-auth
+
+2. php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
+
+//or
+./vendor/bin/sail php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServiceProvider"
+
+câu lệnh trên sẽ tạo ra file, trong folder config/jwt.php
+
+3. ./vendor/bin/sail php artisan jwt:secret
+
+4. This will update your .env file with something like JWT_SECRET=foobar
+
+5.
+Configure Auth guard
+Note: This will only work if you are using Laravel 5.2 and above.
+
+Inside the config/auth.php file you will need to make a few changes to configure Laravel to use the jwt guard to power your application authentication.
+
+Make the following changes to the file:
+
+'defaults' => [
+    'guard' => 'api',
+    'passwords' => 'users',
+],
+
+...
+
+'guards' => [
+    'api' => [
+        'driver' => 'jwt',
+        'provider' => 'users',
+    ],
+],
+Here we are telling the api guard to use the jwt driver, and we are setting the api guard as the default.
+
+6. We can now use Laravel's built in Auth system, with jwt-auth doing the work behind the scenes!
+
+Add some basic authentication routes
+First let's add some routes in routes/api.php as follows:
+
+Route::group([
+
+    'middleware' => 'api',
+    'prefix' => 'auth'
+
+], function ($router) {
+
+    Route::post('login', 'AuthController@login');
+    Route::post('logout', 'AuthController@logout');
+    Route::post('refresh', 'AuthController@refresh');
+    Route::post('me', 'AuthController@me');
+
+});
+
+7.Create the AuthController
+Then create the AuthController, either manually or by running the artisan command:
+
+php artisan make:controller AuthController
+Then add the following:
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Controller;
+
+class AuthController extends Controller
+{
+    /**
+     * Create a new AuthController instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['login']]);
+    }
+
+    /**
+     * Get a JWT via given credentials.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function login()
+    {
+        $credentials = request(['email', 'password']);
+
+        if (! $token = auth()->attempt($credentials)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        return $this->respondWithToken($token);
+    }
+
+    /**
+     * Get the authenticated User.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function me()
+    {
+        return response()->json(auth()->user());
+    }
+
+    /**
+     * Log the user out (Invalidate the token).
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function logout()
+    {
+        auth()->logout();
+
+        return response()->json(['message' => 'Successfully logged out']);
+    }
+
+    /**
+     * Refresh a token.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function refresh()
+    {
+        return $this->respondWithToken(auth()->refresh());
+    }
+
+    /**
+     * Get the token array structure.
+     *
+     * @param  string $token
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    protected function respondWithToken($token)
+    {
+        return response()->json([
+            'access_token' => $token,
+            'token_type' => 'bearer',
+            'expires_in' => auth()->factory()->getTTL() * 60
+        ]);
+    }
+}
+----------------------------------------------------------------
+https://medium.com/@laravelprotips/api-authentication-in-laravel-with-vue-sanctum-a-quick-guide-339e7950b8c8
+https://jurin.medium.com/securing-laravel-10-api-using-jwt-a5b6dca58fd7
+https://vueschool.io/articles/vuejs-tutorials/the-ultimate-guide-for-using-vue-js-with-laravel/
+
+----------------------------------------------------------------
+
+https://cli.vuejs.org/guide/mode-and-env.html#modes
+Modes and Environment Variables#
+Modes#
+Mode is an important concept in Vue CLI projects. By default, there are three modes:
+
+development is used by vue-cli-service serve
+test is used by vue-cli-service test:unit
+production is used by vue-cli-service build and vue-cli-service test:e2e
+You can overwrite the default mode used for a command by passing the --mode option flag. For example, if you want to use development variables in the build command:
+
+vue-cli-service build --mode development
+
+------------------------------------------------
+3
+
+You can access namespaces like namespace/key so
+
+1.
+
+  ...mapGetters([
+      'cart/quantity',
+      'isAuthenticated'
+  ])
+you'll have to access cart quantity like this['cart/quantity'] or you can rename it by using an object like
+
+  ...mapGetters({
+      cartQuantity: 'cart/quantity',
+      isLoggedIn: 'isAuthenticated'
+  })
+  ...mapGetters('cart', [
+      'quantity',
+      'totalSum'
+  ])
+  ...mapGetters({
+      cartQuantity: 'cart/quantity',
+      prodProducts: 'prods/products'
+  })
+
+
+--------------------------------
+https://stackoverflow.com/questions/75442491/typeerror-a-then-is-not-a-function-while-compiling-in-production
+
+--------------------------------
+check password
+https://codepen.io/xichen/pen/EqWmza
+Một mật khẩu hợp lệ theo mẫu /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{7,15}$/ phải đáp ứng các yêu cầu sau:
+
+Phải chứa ít nhất một chữ số từ 0 đến 9.
+Phải chứa ít nhất một ký tự đặc biệt từ tập hợp !@#$%^&*.
+Chỉ được chứa các ký tự từ tập hợp a-zA-Z0-9!@#$%^&*.
+Độ dài của mật khẩu phải từ 7 đến 15 ký tự.
+Dưới đây là một ví dụ về một mật khẩu hợp lệ theo mẫu này: Abc@1234
+
+Abc@1234 có độ dài là 8 ký tự, nằm trong khoảng từ 7 đến 15 ký tự.
+Nó chứa ít nhất một chữ số (1) và ít nhất một ký tự đặc biệt (@).
+Các ký tự khác trong mật khẩu đều thuộc vào tập hợp a-zA-Z0-9!@#$%^&*.
+Do đó, Abc@1234 là một ví dụ của một mật khẩu hợp lệ theo mẫu được cung cấp.
+
+----------------------------------------------------------------
+CHECK AUTHENTICATION IN ROUTE
+https://stackoverflow.com/questions/42603909/accessing-vuex-state-when-defining-vue-router-routes
+
+----------------------------------------------------------------
+https://github.com/darryldecode/laravelshoppingcart
+
+----------------
+npm install --save vuex-persistedstate
+npm i js-cookie
