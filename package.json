@@ -17,6 +17,7 @@
     },
     "dependencies": {
         "cookie": "^0.6.0",
+        "firebase": "^10.10.0",
         "js-cookie": "^3.0.5",
         "vue": "^3.4.21",
         "vue-loader": "^17.4.2",

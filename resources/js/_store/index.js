@@ -7,6 +7,7 @@ import cart from './cart.module';
 import user from './user.module';
 import product from './product.module';
 import history from './history.module';
+import firebase from './firebase.module';
 
 const initCookies = {
     getItem: (key) => Cookies.get(key),
@@ -19,7 +20,8 @@ export default createStore({
         cart,
         user,
         product,
-        history
+        history,
+        firebase
     },
     plugins: [
         createPersistedState({

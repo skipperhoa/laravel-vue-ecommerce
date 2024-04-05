@@ -7,6 +7,11 @@ import Login from "../views/Login.vue";
 import Register from "../views/Register.vue";
 import Message from "../views/Message.vue";
 import Payment from "../views/Payment.vue"
+
+//social
+import PhoneComponent from "../views/social/Phone.vue"
+import RegisterComponent from "../views/social/Register.vue"
+
 import store from "../_store";
 const router = createRouter({
     history: createWebHistory(),
@@ -82,6 +87,23 @@ const router = createRouter({
                 isAuthenticated: true,
             }
         },
+        {
+            path: "/social/register",
+            name: "RegisterComponent",
+            component: RegisterComponent,
+            meta: {
+
+
+            }
+        },
+        {
+            path: "/social/phone-number",
+            name: "PhoneComponent",
+            component: PhoneComponent,
+            meta: {
+
+            }
+        }
 
     ],
 });

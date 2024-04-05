@@ -368,3 +368,6 @@ https://github.com/darryldecode/laravelshoppingcart
 ----------------
 npm install --save vuex-persistedstate
 npm i js-cookie
+
+------------------------------------------------
+https://firebase.google.com/docs/auth/web/phone-auth?hl=vi

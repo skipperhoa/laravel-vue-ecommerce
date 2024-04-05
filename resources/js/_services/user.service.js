@@ -52,8 +52,7 @@ function register(user) {
         headers: { 'Content-Type': 'application/json' },
         data: JSON.stringify(user)
     };
-    console.log("user",user);
-    console.log("base",baseUrl);
+
     const url = baseUrl + '/auth/register';
     return axios(url, requestOptions)
 }

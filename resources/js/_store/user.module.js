@@ -27,7 +27,7 @@ export default{
     },
     mutations:{
         onLogin:function(state, res){
-            console.log("Res",res);
+            //console.log("Res",res);
             state.isLogin = true;
             state.token = res.authorisation.token;
             state._user = res.user;

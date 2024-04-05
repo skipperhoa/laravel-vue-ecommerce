@@ -21,30 +21,85 @@ class AuthController extends Controller
 
     public function register(Request $request){
 
-       $validator = Validator::make($request->all(),[
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6',
-        ]);
-        if($validator->fails()){
-           return response()->json(array("success" => false, "message" =>"Email already exist"), 400);
-        }
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
 
-        $token = Auth::guard('api')->login($user);
-        return response()->json([
-            'status' => 'success',
-            'message' => 'User created successfully',
-            'user' => $user,
-            'authorisation' => [
-                'token' => $token,
-                'type' => 'bearer',
-            ]
-        ]);
+        if($request->providerId=="default"){
+
+                $validator = Validator::make($request->all(),[
+                    'name' => 'required|string|max:255',
+                    'email' => 'required|string|email|max:255|unique:users',
+                    'password' => 'required|string|min:6',
+                ]);
+                if($validator->fails()){
+                    return response()->json(array("success" => false, "message" =>"Email already exist"), 400);
+                }
+                $user = User::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                ]);
+
+                $token = Auth::guard('api')->login($user);
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'User created successfully',
+                    'user' => $user,
+                    'authorisation' => [
+                        'token' => $token,
+                        'type' => 'bearer',
+                    ]
+                ]);
+        }else{
+            $provider = $request->input('providerId');
+            $providerData = null;
+
+            switch ($provider) {
+                case 'email':
+                    $providerData = [
+                        'name' => $request->name,
+                        'email' => $request->email,
+                        'password' => Hash::make($request->password),
+                    ];
+                    break;
+                case 'phone':
+                    $providerData = [
+                        'name' => 'Customer'.$request->phoneNumber,
+                        'email' => $request->uid.'@hoaguyenit.com',
+                        'password' => Hash::make('Customer'.$request->phoneNumber),
+                        'photoUrl'=>$request->photoURL
+                    ];
+
+                    break;
+                case 'google.com':
+                    $providerData = [
+                        'name' => $request->displayName,
+                        'email' => $request->email,
+                        'password' => Hash::make('Customer'.$request->uid),
+                        'photoUrl'=>$request->photoURL
+                    ];
+                    break;
+                case 'facebook':
+                    // Handle Facebook registration with Firebase
+                    break;
+            }
+            if(User::where('email', $providerData['email'])->exists()){
+                $user = User::where('email', $providerData['email'])->first();
+
+            }else{
+                $user = User::create($providerData);
+            }
+            $token = Auth::guard('api')->login($user);
+            return response()->json([
+                'status' => 'success',
+                'message' => 'User  successfully',
+                'user' => $user,
+                'authorisation' => [
+                    'token' => $token,
+                    'type' => 'bearer',
+                ],
+                'provider' => $provider
+            ]);
+
+        }
     }
 
     public function login(Request $request)

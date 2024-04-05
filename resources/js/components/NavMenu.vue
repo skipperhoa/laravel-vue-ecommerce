@@ -90,6 +90,8 @@
 </template>
 
 <script>
+import { getAuth, signOut } from "firebase/auth";
+
 import { RouterLink } from 'vue-router';
 import { mapState, mapActions ,mapGetters} from 'vuex'
 export default {
@@ -122,6 +124,13 @@ export default {
          }),
         onLogout(){
             this.logout(this.token);
+            const auth = getAuth();
+            signOut(auth).then(() => {
+               console.log('Sign-out successful.');
+            }).catch((error) => {
+            // An error happened.
+            console.log('An error happened..');
+            });
         },
         ac(){
             console.log(this.cartSize)
