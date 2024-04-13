@@ -7,6 +7,7 @@ Bulding a shop E-Commerce in Vue 3 + Laravel 10 + JWT(Json Web Token)
 - Config Factory, Seeder
 - Setup ApiResource 
 - Install JWT (Login, Register, refrest token, me,...)
+- Social Firebase(Facebook, Google, Github, Phone)
 
 ![Database](https://raw.githubusercontent.com/skipperhoa/laravel-vue-ecommerce/master/hoacode_note/demo/Screenshot%202024-04-02%20at%2011.51.11.png)
 
