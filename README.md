@@ -21,7 +21,7 @@ Bulding a shop E-Commerce in Vue 3 + Laravel 10 + JWT(Json Web Token)
 # DEMO
 ![Register](https://raw.githubusercontent.com/skipperhoa/laravel-vue-ecommerce/master/hoacode_note/demo/Screenshot%202024-04-01%20at%2014.30.59.png)
 
-![Login](https://raw.githubusercontent.com/skipperhoa/laravel-vue-ecommerce/master/hoacode_note/demo/Screenshot%202024-04-01%20at%2014.31.20.png)
+![Login](https://raw.githubusercontent.com/skipperhoa/laravel-vue-ecommerce/master/hoacode_note/demo/social-login.png)
 
 ![Cart and Checkout](https://raw.githubusercontent.com/skipperhoa/laravel-vue-ecommerce/master/hoacode_note/demo/Screenshot%202024-04-01%20at%2014.32.32.png)
 
