@@ -371,3 +371,63 @@ npm i js-cookie
 
 ------------------------------------------------
 https://firebase.google.com/docs/auth/web/phone-auth?hl=vi
+
+https://dashboard.ngrok.com/get-started/setup/macos
+# https://ngrok.com/download
+Để sử dụng ngrok với một dự án Laravel Vue trên máy tính Mac M1, bạn có thể thực hiện các bước sau:
+
+Cài đặt ngrok: brew install ngrok/ngrok/ngrok
+
+Đầu tiên, bạn cần tải xuống ngrok từ trang web chính thức: https://ngrok.com/download.
+Sau khi tải xuống, giải nén tệp ngrok và di chuyển nó vào một vị trí phù hợp trên máy tính của bạn. Ví dụ: /Applications/ngrok.
+Thêm ngrok vào biến môi trường PATH:
+
+Mở Terminal trên máy tính Mac M1 của bạn.
+Mở tệp cấu hình ~/.zshrc hoặc ~/.bash_profile bằng cách sử dụng trình soạn thảo văn bản yêu thích của bạn. Ví dụ:
+bash
+Copy code
+nano ~/.zshrc
+Thêm đường dẫn đến thư mục chứa ngrok vào biến PATH. Ví dụ:
+ruby
+Copy code
+export PATH=$PATH:/Applications/ngrok
+Lưu và đóng tệp cấu hình.
+Mở một cửa sổ Terminal mới và kiểm tra cài đặt:
+
+Mở một cửa sổ Terminal mới để tải lại các cài đặt biến môi trường.
+Kiểm tra xem ngrok đã được cài đặt thành công bằng cách chạy lệnh:
+Copy code
+ngrok version
+Sử dụng ngrok với Laravel Vue:
+
+Đảm bảo rằng dự án Laravel Vue của bạn đang chạy trên cổng cụ thể (ví dụ: cổng 8000).
+Trong cửa sổ Terminal mới, nhập lệnh sau để tạo một đường hầm (tunnel) từ cổng của máy tính của bạn đến Internet:
+yaml
+Copy code
+ngrok http 8000
+Ngrok sẽ tạo ra một URL công khai mà bạn có thể sử dụng để truy cập dự án Laravel Vue của mình từ bất kỳ đâu.
+Sau khi bạn đã thực hiện các bước trên, bạn sẽ có thể sử dụng ngrok để tạo một đường hầm và truy cập dự án Laravel Vue của mình từ bất kỳ đâu trên Internet.
+----------------------------------------------------------------
+# https://dashboard.ngrok.com/get-started/setup/macos
+brew install ngrok/ngrok/ngrok
+ngrok config add-authtoken 2TVDQbnkorOkXZ40KktSgqlhcfV_3pdmveSxWYZfkrGxGDpQj
+ngrok http http://localhost:8080
+
+
+================================================================
+validatePhoneNumber() {
+    // Regular expression pattern for Vietnamese phone numbers
+    const vietnamesePhoneNumberPattern = /^(0|\+?84)?\d{9,10}$/;
+
+    // Remove all non-numeric characters except '+' from the input
+    const cleanedPhoneNumber = this.phoneNumber.replace(/[^\d+]/g, '');
+
+    // Test the input phone number against the pattern
+    this.isValidPhoneNumber = vietnamesePhoneNumberPattern.test(cleanedPhoneNumber);
+}
+Trong biểu thức chính quy mới:
+
+^ đại diện cho sự khớp đầu chuỗi.
+(0|\+?84)? cho phép chuỗi bắt đầu với 0, +84 hoặc không có gì. Dấu ? sau \+ có ý nghĩa là ký tự + có thể xuất hiện hoặc không.
+\d{9,10} khớp với 9 hoặc 10 chữ số tiếp theo, không cần phải có dấu cách hoặc dấu -.
+$ đại diện cho sự khớp cuối chuỗi.

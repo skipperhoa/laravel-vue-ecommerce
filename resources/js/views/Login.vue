@@ -2,8 +2,8 @@
 <div class="flex items-center min-h-screen p-4 justify-center">
       <div class="w-full max-w-xl  overflow-hidden rounded-md p-10">
         <div class="w-full">
-            <img src="../assets/images/logo.png" class="w-20 m-auto block" />
-            <h3 class="my-4 text-xl text-center font-semibold text-gray-700">HoaNguyenIT.com</h3>
+            <img src="../assets/images/avatar.jpg" class="w-20 h-20 m-auto block rounded-full" />
+            <h3 class="my-4 text-xl text-center font-semibold text-gray-700">Hòa Nguyễn Coder</h3>
             <form action="" class="flex flex-col space-y-5" @submit.prevent="login">
               <div class="flex flex-col space-y-1">
                 <label for="email" class="text-sm font-semibold text-gray-800">Email address</label>

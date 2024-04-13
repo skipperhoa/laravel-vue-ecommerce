@@ -2,8 +2,8 @@
     <div class="flex items-center min-h-screen p-4 m-auto">
       <div class="w-full max-w-xl m-auto overflow-hidden rounded-md p-10">
         <div class="w-full">
-          <img src="@/assets/images/logo.png" alt="Logo" class="w-20 mx-auto block" />
-          <h3 class="my-4 text-xl text-center font-semibold text-gray-700">HoaNguyenIT.com</h3>
+          <img src="@/assets/images/avatar.jpg" alt="Logo" class="w-20 h-20 rounded-full mx-auto block" />
+          <h3 class="my-4 text-xl text-center font-semibold text-gray-700">Hòa Nguyễn Coder</h3>
           <div v-if="!isSubmitPhone" class="flex flex-col space-y-5">
             <div class="flex flex-col space-y-1">
               <div class="flex flex-row">
@@ -11,11 +11,11 @@
                   <option value="+84">+84</option>
                   <option value="+1">+1</option>
                 </select>
-                <input type="tel" id="phone" name="phone" v-model="phone" class="w-full px-4 py-2 transition duration-300 border border-gray-300 rounded focus:border-transparent focus:outline-none focus:ring-4 focus:ring-blue-200" placeholder="Enter your phone number" />
+                <input type="tel" id="phone" name="phone" v-model="phone" @blur="validatePhoneNumber" class="w-full px-4 py-2 transition duration-300 border border-gray-300 rounded focus:border-transparent focus:outline-none focus:ring-4 focus:ring-blue-200" placeholder="Enter your phone number" />
               </div>
             </div>
             <button @click="onPhoneNumber" type="submit" class="w-full px-4 py-2 text-lg font-semibold text-white transition-colors duration-300 bg-green-500 rounded-md shadow hover:bg-green-600 focus:outline-none focus:ring-blue-200 focus:ring-4">
-              Login
+                Send Verification Code
             </button>
 
           </div>
@@ -26,15 +26,13 @@
               <input type="text" v-model="verificationCode" placeholder="Verify your phone" class="w-full px-4 py-2 transition duration-300 border border-gray-300 rounded focus:border-transparent focus:outline-none focus:ring-4 focus:ring-blue-200" />
             </div>
             <button  @click="confirmOpt" class="w-full px-4 py-2 text-lg font-semibold text-white transition-colors duration-300 bg-yellow-500 rounded-md shadow hover:bg-yellow-600 focus:outline-none focus:ring-blue-200 focus:ring-4">
-              Resend OTP
+                Verify Code
             </button>
 
 
           </div>
           <div id="recaptcha-container"></div>
-            <div v-if="dataUser">
-                <p>{{JSON.stringify(dataUser)}}</p>
-            </div>
+
         </div>
         <div class="w-full flex flex-row justify-center items-center py-2">
             <hr class="w-40 border-gray-200 h-[1px]">
@@ -75,8 +73,20 @@
           const store = useStore()
           const router = useRouter()
          console.log(store.state.user)
+         const validatePhoneNumber=()=>{
+              // Regular expression pattern for Vietnamese phone numbers
+              const vietnamesePhoneNumberPattern = /^(0|\+?84)?\d{9,10}$/;
+
+              // Remove all non-numeric characters except '+' from the input
+              const cleanedPhoneNumber = this.phone.replace(/[^\d+]/g, '');
+
+              // Test the input phone number against the pattern
+              phone.value = vietnamesePhoneNumberPattern.test(cleanedPhoneNumber);
+
+          }
 
           const onPhoneNumber =  async () => {
+
 
                 try {
                     const recaptchaContainer = document.getElementById('recaptcha-container');
@@ -97,7 +107,8 @@
                  //   await store.dispatch('firebase/loginWithPhone',{phoneNumber:phone.value,recaptchaVerifier:recaptchaVerifier})
                     isSubmitPhone.value = true
                     //router.push({name: 'message'})
-
+                     phone.value = selectedCountryCode.value + phone.value
+                     console.log(phone.value)
                      signInWithPhoneNumber(auth, phone.value, recaptchaVerifier)
                         .then((confirmationResult) => {
                                     // SMS sent. Prompt user to type the code from the message, then sign the
@@ -124,6 +135,7 @@
                         userService.register(dataUser.value).then(response => {
                                 if(response.status == 200){
                                      store.commit('user/onLogin',response.data)
+                                     store.dispatch('cart/getAllCarts',null, { root: true })
                                     setTimeout(() => {
                                         router.push({name: 'message'})
                                     },1000);
@@ -142,7 +154,7 @@
 
                 }
 
-          return { dataUser,phone,selectedCountryCode,isSubmitPhone, verificationCode,error, onPhoneNumber,confirmOpt}
+          return { dataUser,phone,selectedCountryCode,isSubmitPhone, verificationCode,error, onPhoneNumber,confirmOpt,validatePhoneNumber}
         }
       };
       </script>

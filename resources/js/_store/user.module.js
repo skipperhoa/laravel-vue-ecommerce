@@ -8,7 +8,11 @@ export default{
         isRememberMe:false,
         token:null,
         _user:null,
-        test:"hoa"
+        error:{
+            isError:false,
+            provider:"",
+            message:""
+        }
     },
     getters:{
         user: (state) => {
@@ -56,6 +60,9 @@ export default{
             localStorage.removeItem('laravel-vue-ecommerce');
 
 
+        },
+        error: (state, error) => {
+            state.error = error
         }
 
     },

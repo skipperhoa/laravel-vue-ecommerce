@@ -1,7 +1,8 @@
 import { createStore } from 'vuex'
 import { auth } from '../firebase/init'
 import { userService } from '../_services'
-import {signInWithPhoneNumber,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,GoogleAuthProvider, signInWithPopup,FacebookAuthProvider} from 'firebase/auth'
+import {signInWithPhoneNumber,fetchSignInMethodsForEmail,GithubAuthProvider,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,GoogleAuthProvider, signInWithPopup,FacebookAuthProvider} from 'firebase/auth'
+
 
 export default{
   namespaced: true,
@@ -52,38 +53,92 @@ export default{
     },
 
     async loginWithGoogle({commit,rootState, dispatch}) {
-        const provider = new GoogleAuthProvider()
+        try {
+            const provider = new GoogleAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+            const response = await userService.register(user.providerData[0]);
+            if (response.status === 200) {
+                console.log("chay 1", response);
+                commit('user/onLogin', response.data, { root: true });
+                dispatch('cart/getAllCarts',null, { root: true })
+                console.log("chay 4", response.value);
 
-        signInWithPopup(auth, provider)
-            .then((result) => {
-                const credential = GoogleAuthProvider.credentialFromResult(result);
-                const token = credential.accessToken;
-                const user = result.user.providerData[0]
-                console.log("onGoogle",user)
-                userService.register(user).then(response => {
-                        if(response.status == 200){
-
-                            commit('user/onLogin',response.data, { root: true })
-                        }
-
-                    }).catch(error => {
-                        if(error.response.status===400){
-                           // alert(error.response.data.message);
-                        }
-            });
-
-
-
-            }).catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-
-
-            });
+            }
+        } catch (error) {
+            console.error(error.message);
+            throw error;
+        }
     },
+    async loginWithGithub({commit,rootState, dispatch}) {
+        try {
+            const provider = new GithubAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+            console.log("GITHUB",user)
+            const credential = await GithubAuthProvider.credentialFromResult(result);
+            const token = credential.accessToken;
+            const response = await userService.register(user.providerData[0]);
+            if (response.status === 200) {
+                console.log("chay 1", response);
+                console.log("daata",response.data)
+                commit('user/onLogin', response.data, { root: true });
+                dispatch('cart/getAllCarts',null, { root: true })
+                console.log("chay 4", response.value);
+
+            }
+        } catch (error) {
+            console.log("Email",error.code)
+            if (error.code === 'auth/account-exists-with-different-credential') {
+                const email = error.customData.email;
+                // Xác định phương thức đăng nhập đã sử dụng trước đó
+                fetchSignInMethodsForEmail(auth, email)
+                    .then((methods) => {
+                        // Hiển thị thông tin cho người dùng để họ chọn cách đăng nhập
+                        console.log("Tài khoản đã tồn tại với phương thức đăng nhập sau:", methods);
+                        // Trong ví dụ này, chúng ta không thực hiện việc kết hợp tự động
+                        // Thay vào đó, cung cấp hướng dẫn cho người dùng về cách kết hợp tài khoản
+                         let message = "Tài khoản đã tồn tại với phương thức đăng nhập sau:"+ methods;
+                         let _error={
+                             isError:true,
+                             provider:methods,
+                             message: message
+                         }
+                         commit("user/error", _error, { root: true });
+                    })
+                    .catch((error) => {
+                        // Xử lý lỗi nếu không thể xác định phương thức đăng nhập
+                        console.error("Lỗi xác định phương thức đăng nhập:", error);
+                    });
+            } else {
+                // Xử lý các lỗi khác
+                console.error("Lỗi đăng nhập:", error);
+            }
+        }
+    },
+
     async loginWithFacebook(context){
-        const provider = new FacebookAuthProvider()
-        signInWithPopup(auth, provider)
+
+        try {
+            const provider = new FacebookAuthProvider();
+            const result = await signInWithPopup(auth, provider);
+            const user = result.user;
+            const credential = FacebookAuthProvider.credentialFromResult(result);
+            const token = credential.accessToken;
+            console.log("onFacebook", user);
+            const response = await userService.register(user.providerData[0]);
+
+            if (response.status === 200) {
+                console.log("chay 1", response);
+                commit('user/onLogin', response.data, { root: true });
+                dispatch('cart/getAllCarts',null, { root: true })
+                console.log("chay 4", response.value);
+            }
+        } catch (error) {
+            console.error(error.message);
+            throw error;
+        }
+       /* await  signInWithPopup(auth, provider)
             .then((result) => {
                 // This gives you a Facebook Access Token. You can use it to access the Facebook API.
                 const credential = FacebookAuthProvider.credentialFromResult(result);
@@ -101,7 +156,7 @@ export default{
                 // The AuthCredential type that was used.
                 const credential = FacebookAuthProvider.credentialFromError(error);
                 // ...
-            });
+            }); */
     },
     async loginWithPhone({commit,rootState},{phoneNumber,recaptchaVerifier}) {
         console.log("user2",rootState.user)

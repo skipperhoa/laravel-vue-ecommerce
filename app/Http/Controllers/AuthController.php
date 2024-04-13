@@ -58,6 +58,7 @@ class AuthController extends Controller
                         'name' => $request->name,
                         'email' => $request->email,
                         'password' => Hash::make($request->password),
+                        'providerId' => $provider,
                     ];
                     break;
                 case 'phone':
@@ -65,7 +66,9 @@ class AuthController extends Controller
                         'name' => 'Customer'.$request->phoneNumber,
                         'email' => $request->uid.'@hoaguyenit.com',
                         'password' => Hash::make('Customer'.$request->phoneNumber),
-                        'photoUrl'=>$request->photoURL
+                        'photoUrl'=>$request->photoURL,
+                        'phone'=>$request->phoneNumber,
+                        'providerId' => $provider,
                     ];
 
                     break;
@@ -74,7 +77,17 @@ class AuthController extends Controller
                         'name' => $request->displayName,
                         'email' => $request->email,
                         'password' => Hash::make('Customer'.$request->uid),
-                        'photoUrl'=>$request->photoURL
+                        'photoUrl'=>$request->photoURL,
+                        'providerId' => $provider,
+                    ];
+                    break;
+                case 'github.com':
+                    $providerData = [
+                        'name' => $request->displayName,
+                        'email' => $request->email,
+                        'password' => Hash::make('Customer'.$request->uid),
+                        'photoUrl'=>$request->photoURL,
+                        'providerId' => $provider,
                     ];
                     break;
                 case 'facebook':
@@ -83,6 +96,14 @@ class AuthController extends Controller
             }
             if(User::where('email', $providerData['email'])->exists()){
                 $user = User::where('email', $providerData['email'])->first();
+                if($user->providerId!=$provider){
+                    $user->providerId=$provider;
+
+                }
+                if($provider=='phone'){
+                    $user->phone=$providerData['phone'];
+                }
+                $user->save();
 
             }else{
                 $user = User::create($providerData);
